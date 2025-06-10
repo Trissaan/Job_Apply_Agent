@@ -1,11 +1,12 @@
-import openai
-from app.config import OPENAI_API_KEY
+import os
+import anthropic
+from app.config import ANTHROPIC_API_KEY
 
-openai.api_key = OPENAI_API_KEY
+client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 def generate_cover_letter(jd_text, resume_text, job_title):
     prompt = f"""
-You are a professional career assistant. Using the following resume and job description,
+Human: You are a professional career assistant. Using the following resume and job description,
 write a personalized, formal cover letter for the role of {job_title}. Emphasize relevance 
 and alignment between experience and job needs.
 
@@ -15,13 +16,13 @@ Resume:
 Job Description:
 {jd_text}
 
-Cover Letter:
-    """
+Assistant:"""
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # or gpt-3.5-turbo if cost is a concern
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7  # Controls creativity
+    response = client.messages.create(
+        model="claude-3-haiku-20240307",
+        max_tokens=1024,
+        temperature=0.7,
+        messages=[{"role": "user", "content": prompt}]
     )
 
-    return response['choices'][0]['message']['content']
+    return response.content[0].text
