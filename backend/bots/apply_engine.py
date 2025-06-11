@@ -27,7 +27,8 @@ def apply_to_job(url: str, resume_path: str, user_info: dict):
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+        context = browser.new_context(ignore_https_errors=True)
+        page = context.new_page()
         page.goto(url, timeout=60000)
 
         if platform == "workday":
