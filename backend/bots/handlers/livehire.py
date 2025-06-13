@@ -1,7 +1,9 @@
 from utils.claude_client import get_best_apply_button
+from app.utils.form_utils import extract_form_fields, fill_form_by_index
+from app.utils.claude_field_mapper import get_field_mapping_from_claude
 
 def apply_livehire(page, resume_path, user_info):
-    print("🧠 Trying to find a resume-related button first...")
+    print("🧠 Starting LiveHire Application Process...")
 
     try:
         # Step 1: Wait for buttons to load
@@ -32,18 +34,35 @@ def apply_livehire(page, resume_path, user_info):
         matched_button.wait_for(timeout=10000)
         matched_button.click()
 
-        # Step 5: Fill the form
-        page.wait_for_selector("input#firstName", timeout=15000)
-        page.fill("input#firstName", user_info["first_name"])
-        page.fill("input#lastName", user_info["last_name"])
-        page.fill("input#emailAddress", user_info["email"])
-        page.fill("input#mobileNumber", user_info["phone"])
-        page.set_input_files("input[type='file']", resume_path)
-        page.click("button[type='submit']")
+        # Step 5: Extract form structure
+        print("🔍 Extracting visible form fields...")
+        fields = extract_form_fields(page)
 
-        print("✅ Application submitted on LiveHire.")
+        # Step 6: Get Claude's index-to-userinfo mapping
+        print("🧠 Asking Claude to map fields to user info...")
+        mapping = get_field_mapping_from_claude(user_info, fields)
+
+        # Step 7: Fill the form
+        fill_form_by_index(page, fields, mapping, user_info)
+
+        # Step 8: Upload Resume
+        try:
+            page.set_input_files("input[type='file']", resume_path)
+            print("📎 Resume uploaded.")
+        except Exception as e:
+            print(f"❌ Resume upload failed: {e}")
+
+        # Step 9: Submit the form
+        try:
+            submit = page.locator("button[type='submit'], button:has-text('Submit'), button:has-text('Apply')").first
+            submit.click()
+            print("🚀 Application submitted.")
+        except Exception as e:
+            print(f"❌ Could not click submit button: {e}")
+
+        # Step 10: Screenshot
         page.screenshot(path="png/livehire_success.png")
 
     except Exception as e:
         print(f"❌ Failed to apply on LiveHire: {e}")
-        page.screenshot(path="livehire_failed.png")
+        page.screenshot(path="png/livehire_failed.png")
