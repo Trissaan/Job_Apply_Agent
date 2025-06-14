@@ -52,3 +52,29 @@ def fill_form_by_index(page, field_list, index_mapping, user_info):
                 print(f"✅ Filled '{field['label']}' with '{value[:30]}'")
         except Exception as e:
             print(f"❌ Could not fill field {field['label']}: {e}")
+def extract_possible_upload_targets(page):
+    elements = page.locator("*:visible")
+    potential_uploads = []
+
+    for i in range(min(elements.count(), 100)):  # Limit for performance
+        try:
+            el = elements.nth(i)
+            tag = el.evaluate("e => e.tagName.toLowerCase()")
+            text = el.text_content().strip()
+            aria = el.get_attribute("aria-label") or ""
+            class_attr = el.get_attribute("class") or ""
+
+            combined = f"{text} {aria} {class_attr}".lower()
+            if any(keyword in combined for keyword in ["upload", "resume", "cv", "drag", "drop", "file"]):
+                potential_uploads.append({
+                    "index": i,
+                    "tag": tag,
+                    "text": text,
+                    "aria": aria,
+                    "classes": class_attr
+                })
+        except:
+            continue
+
+    return potential_uploads
+
