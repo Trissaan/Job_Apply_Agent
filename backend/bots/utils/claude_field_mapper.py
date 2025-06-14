@@ -1,4 +1,4 @@
-from utils.claude_client import claude_ask
+from bots.utils.claude_client import claude_ask
 
 def get_field_mapping_from_claude(user_info, field_list):
     prompt = f"""

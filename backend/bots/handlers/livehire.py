@@ -1,15 +1,15 @@
 import os
-from utils.claude_client import get_best_apply_button
-from app.utils.form_utils import extract_form_fields, fill_form_by_index
-from app.utils.claude_field_mapper import get_field_mapping_from_claude
+from bots.utils.claude_client import get_best_apply_button
+from bots.utils.form_utils import extract_form_fields, fill_form_by_index
+from bots.utils.claude_field_mapper import get_field_mapping_from_claude
 from app.resume.gpt_utils import generate_cover_letter  
-from app.utils.pdf_utils import save_cover_letter_as_pdf
+from bots.utils.pdf_utils import save_cover_letter_as_pdf
 
 def apply_livehire(page, resume_path, user_info):
     print("🧠 Starting LiveHire Application Process...")
 
     try:
-        # Step 1: Wait for buttons to load
+        # Step 1: Wait for buttons to load 
         page.wait_for_selector("button", timeout=10000)
         buttons = page.locator("button")
 
