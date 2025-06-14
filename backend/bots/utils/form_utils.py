@@ -44,8 +44,11 @@ def fill_form_by_index(page, field_list, index_mapping, user_info):
                     elem.check()
             elif tag == "select":
                 elem.select_option(label=value)
+            elif tag == "file" and user_key.endswith("_path"):
+                page.set_input_files(elem, value)
+                print(f"📎 Uploaded file for '{field['label']}'")
             else:
                 elem.fill(value)
-            print(f"✅ Filled '{field['label']}' with '{value}'")
+                print(f"✅ Filled '{field['label']}' with '{value[:30]}'")
         except Exception as e:
-            print(f"❌ Could not fill {field['label']}: {e}")
+            print(f"❌ Could not fill field {field['label']}: {e}")

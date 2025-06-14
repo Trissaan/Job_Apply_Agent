@@ -1,12 +1,10 @@
 from playwright.sync_api import sync_playwright
 from urllib.parse import urlparse
-
-# platform handlers
-from handlers.workday import apply_workday
-from handlers.greenhouse import apply_greenhouse
-from handlers.lever import apply_lever
-from handlers.livehire import apply_livehire
-from handlers.google_form import apply_google_form
+from bots.handlers.workday import apply_workday
+from bots.handlers.greenhouse import apply_greenhouse
+from bots.handlers.lever import apply_lever
+from bots.handlers.livehire import apply_livehire
+from bots.handlers.google_form import apply_google_form
 
 def detect_platform(url: str):
     if "workday" in url:

@@ -1,6 +1,4 @@
 from bots.apply_engine import apply_to_job
-from utils.claude_client import get_best_apply_button
-from handlers.livehire import apply_livehire
 
 resume_path = "E:\\Personal\\Resume\\Trissaan_A_S Resume .pdf"
 

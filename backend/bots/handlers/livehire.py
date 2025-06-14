@@ -1,6 +1,9 @@
+import os
 from utils.claude_client import get_best_apply_button
 from app.utils.form_utils import extract_form_fields, fill_form_by_index
 from app.utils.claude_field_mapper import get_field_mapping_from_claude
+from app.resume.gpt_utils import generate_cover_letter  
+from app.utils.pdf_utils import save_cover_letter_as_pdf
 
 def apply_livehire(page, resume_path, user_info):
     print("🧠 Starting LiveHire Application Process...")
@@ -34,6 +37,12 @@ def apply_livehire(page, resume_path, user_info):
         matched_button.wait_for(timeout=10000)
         matched_button.click()
 
+        cover_letter_text = generate_cover_letter(jd_text, resume_text, job_title)
+        cover_letter_path = save_cover_letter_as_pdf(cover_letter_text)
+
+        user_info["cover_letter"] = cover_letter_text
+        user_info["cover_letter_path"] = cover_letter_path
+
         # Step 5: Extract form structure
         print("🔍 Extracting visible form fields...")
         fields = extract_form_fields(page)
@@ -66,3 +75,9 @@ def apply_livehire(page, resume_path, user_info):
     except Exception as e:
         print(f"❌ Failed to apply on LiveHire: {e}")
         page.screenshot(path="png/livehire_failed.png")
+    
+    try:
+        os.remove(user_info["cover_letter_path"])
+        print("🧹 Cleaned up temporary cover letter PDF.")
+    except Exception as e:
+        print(f"⚠️ Could not delete temp PDF: {e}")
