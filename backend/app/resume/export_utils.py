@@ -1,9 +1,10 @@
 import os
 import pdfkit
+from pdfminer.high_level import extract_text
 
 WKHTMLTOPDF_PATH = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
 
-def save_resume_as_pdf(resume_text: str, filename: str = "resume.pdf", out_dir: str = "./temp") -> str:
+def generate_pdf_from_text(resume_text: str, filename: str = "resume.pdf", out_dir: str = "./temp") -> str:
     os.makedirs(out_dir, exist_ok=True)
 
     # Save as temporary HTML
@@ -34,3 +35,11 @@ def save_resume_as_text(resume_text: str, filename: str = "resume.txt", out_dir:
     with open(txt_path, "w", encoding="utf-8") as f:
         f.write(resume_text)
     return txt_path
+
+
+def extract_text_from_pdf(file_path: str) -> str:
+    try:
+        return extract_text(file_path).strip()
+    except Exception as e:
+        print(f" Failed to extract text from PDF: {e}")
+        return ""

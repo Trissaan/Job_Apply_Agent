@@ -13,10 +13,10 @@ def get_seek_jobs(title: str = Query(..., alias="job_title"), location: str = "m
         )
 
         print("🔍 RAW subprocess output:")
-        #print(result)  # This will show what's breaking json.loads()
+        """#print(result)  # This will show what's breaking json.loads()
 
         # TEMP: return raw output instead of parsing it
-        #return {"raw_output": result}
+        #return {"raw_output": result}"""
         parsed = json.loads(result)
         return {"jobs": parsed}
 
@@ -24,3 +24,4 @@ def get_seek_jobs(title: str = Query(..., alias="job_title"), location: str = "m
         return {"error": f"CalledProcessError: {e.output}"}
     except Exception as ex:
         return {"error": f"Exception: {str(ex)}"}
+# TODO: remove subprocess + seek_worker.py once stable. Use direct import from app.jobs.seek_scraper
