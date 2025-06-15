@@ -1,43 +1,65 @@
 from bots.utils.claude_client import claude_ask
+import json
+import re
+from html import unescape
+
+def strip_html_tags(html_text):
+    text = re.sub(r"<[^>]+>", "", html_text)
+    return unescape(text.strip())
 
 def extract_job_details_ai(page):
-    # Extract all visible text from the page (grouped)
+    # Grab visible text blocks
     all_elements = page.locator("body *:visible")
     content_blocks = []
 
-    for i in range(min(100, all_elements.count())):  # limit for speed
+    for i in range(min(100, all_elements.count())):
         try:
             text = all_elements.nth(i).text_content().strip()
-            if text and len(text) > 30:  # skip empty or tiny text
+            if text and len(text) > 30:
                 content_blocks.append(text)
-        except Exception:
+        except:
             continue
 
-    all_text = "\n\n".join(content_blocks)
+    full_text = "\n\n".join(content_blocks)
 
     prompt = f"""
-You are helping extract job information from a job posting webpage.
+You're analyzing a job application page.
 
-Below is all the visible content from the job page:
+Extract the following from the provided visible text content:
+1. Job title
+2. Company name
+3. A plain text version of the job description (no HTML)
+4. Up to 5 relevant tags (e.g., "remote", "azure", "contract")
 
-{all_text}
+⚠️ Output must be **valid JSON only**. Do not include any markdown, explanation, or commentary.
 
-From this, identify and extract only the **Job Title** and **Job Description**.
-Respond in the following JSON format:
-
+Example format:
 {{
   "job_title": "...",
-  "job_description": "..."
+  "company": "...",
+  "job_description": "...",
+  "tags": ["...", "..."]
 }}
+
+Here is the page content:
+{full_text}
 """
 
-    response = claude_ask(prompt)
-
     try:
-        parsed = eval(response) if isinstance(response, str) else response
-        job_title = parsed.get("job_title", "Job Title")
-        job_description = parsed.get("job_description", "")
-        return job_title.strip(), job_description.strip()
+        response = claude_ask(prompt).strip()
+        print("🧠 Claude raw response:", response)
+
+        parsed = json.loads(response)
+
+        jd_raw = parsed.get("job_description", "")
+        job_description = strip_html_tags(jd_raw)
+
+        return (
+            parsed.get("job_title", "Job Title").strip(),
+            parsed.get("company", "Unknown Company").strip(),
+            job_description,
+            parsed.get("tags", [])
+        )
     except Exception as e:
-        print(f"❌ Failed to parse Claude JD response: {e}")
-        return "Job Title", ""
+        print(f"❌ Claude failed to extract structured job details: {e}")
+        return "Job Title", "Unknown Company", "", []

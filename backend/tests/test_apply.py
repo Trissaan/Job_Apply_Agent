@@ -5,7 +5,7 @@ resume_path = "E:\\Personal\\Resume\\Trissaan_A_S Resume .pdf"
 user_info = {
     "first_name": "Trissaan",
     "last_name": "Shanmugasundaram",
-    "email": "trissaan@gmail.com",
+    "email": "trissaan811@gmail.com",
     "phone": "0434549364"
 }
 

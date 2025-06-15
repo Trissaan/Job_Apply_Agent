@@ -1,6 +1,7 @@
 import anthropic
 import os
 from dotenv import load_dotenv
+import json 
 
 load_dotenv()
 
@@ -38,3 +39,31 @@ Buttons:
 Respond with the **exact button text only**. Do not add explanations or punctuation. Just return the label exactly as shown.
 """
     return claude_ask(prompt, temperature=0).strip('"')
+
+
+def get_best_resume_upload_target(possible_targets):
+    prompt = f"""
+You're helping identify a resume upload element from a job application webpage.
+
+Here are possible visible HTML elements. Each contains:
+- index (its position)
+- tag name (e.g. 'div', 'span', 'button')
+- text content
+- aria-label (if present)
+- CSS classes
+
+Choose the most likely element that opens or triggers a resume upload input.
+
+⚠️ Respond with **ONLY** the index number, like: `"3"`  
+If none clearly match, respond with `"none"` and nothing else.
+
+Elements:
+{json.dumps(possible_targets, indent=2)}
+"""
+    try:
+        response = claude_ask(prompt).strip()
+        print(f"🤖 Claude fallback upload suggestion: {response}")
+        return response
+    except Exception as e:
+        print(f"❌ Claude failed to pick upload element: {e}")
+        return "none"

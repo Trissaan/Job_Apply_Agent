@@ -78,3 +78,4 @@ def extract_possible_upload_targets(page):
 
     return potential_uploads
 
+

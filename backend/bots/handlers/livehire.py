@@ -6,6 +6,8 @@ from app.resume.gpt_utils import generate_cover_letter
 from bots.utils.pdf_utils import save_cover_letter_as_pdf
 from bots.utils.job_parser import extract_job_details_ai
 from bots.utils.upload_handler import smart_resume_upload
+from bots.utils.logger import log_application
+
 
 
 def apply_livehire(page, resume_path, user_info):
@@ -13,7 +15,7 @@ def apply_livehire(page, resume_path, user_info):
 
     try:
         # Step 1: Extract Job Title & Description using AI
-        job_title, jd_text = extract_job_details_ai(page)
+        job_title, company, jd_text, tags = extract_job_details_ai(page)
         print(f"🧠 Claude-extracted title: {job_title}")
         print(f"📄 JD length: {len(jd_text)} chars")
 
@@ -74,6 +76,17 @@ def apply_livehire(page, resume_path, user_info):
             submit = page.locator("button[type='submit'], button:has-text('Submit'), button:has-text('Apply')").first
             submit.click()
             print("🚀 Application submitted.")
+            log_application(
+                job_title=job_title,
+                company=company,
+                job_description=jd_text,
+                cover_letter_text=cover_letter_text,
+                platform="LiveHire",
+                job_url=page.url,
+                tags=tags
+            )
+
+
         except Exception as e:
             print(f"❌ Could not click submit button: {e}")
 
