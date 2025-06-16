@@ -1,11 +1,13 @@
 from bots.apply_engine import apply_to_job
+from bots.utils.claude_client import get_best_apply_button
+from handlers.livehire import apply_livehire
 
 resume_path = "E:\\Personal\\Resume\\Trissaan_A_S Resume .pdf"
 
 user_info = {
     "first_name": "Trissaan",
     "last_name": "Shanmugasundaram",
-    "email": "trissaan811@gmail.com",
+    "email": "trissaan@gmail.com",
     "phone": "0434549364"
 }
 

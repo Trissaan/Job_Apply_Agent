@@ -3,7 +3,7 @@ from bots.utils.claude_client import get_best_apply_button
 from bots.utils.form_utils import extract_form_fields, fill_form_by_index
 from bots.utils.claude_field_mapper import get_field_mapping_from_claude
 from app.resume.gpt_utils import generate_cover_letter  
-from bots.utils.pdf_utils import save_cover_letter_as_pdf
+from app.resume.export_utils import generate_pdf_from_text
 from bots.utils.job_parser import extract_job_details_ai
 from bots.utils.upload_handler import smart_resume_upload
 from bots.utils.logger import log_application
@@ -21,7 +21,7 @@ def apply_livehire(page, resume_path, user_info):
 
         # Step 2: Generate cover letter and save PDF
         cover_letter_text = generate_cover_letter(jd_text, user_info.get("resume_text", ""), job_title)
-        cover_letter_path = save_cover_letter_as_pdf(cover_letter_text)
+        cover_letter_path = generate_pdf_from_text(cover_letter_text)
         user_info["cover_letter"] = cover_letter_text
         user_info["cover_letter_path"] = cover_letter_path
 
