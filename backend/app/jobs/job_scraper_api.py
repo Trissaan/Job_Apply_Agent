@@ -1,27 +1,13 @@
 from fastapi import APIRouter, Query
-import subprocess
-import json
+from app.jobs.scrapers.seek import scrape_seek_jobs
+import asyncio
 
 router = APIRouter()
 
 @router.get("/seek-jobs", operation_id="get_seek_jobs")
 def get_seek_jobs(title: str = Query(..., alias="job_title"), location: str = "melbourne"):
     try:
-        result = subprocess.check_output(
-            ["python", "bots/seek_worker.py", title, location],
-            text=True
-        )
-
-        print("🔍 RAW subprocess output:")
-        """#print(result)  # This will show what's breaking json.loads()
-
-        # TEMP: return raw output instead of parsing it
-        #return {"raw_output": result}"""
-        parsed = json.loads(result)
-        return {"jobs": parsed}
-
-    except subprocess.CalledProcessError as e:
-        return {"error": f"CalledProcessError: {e.output}"}
+        jobs = asyncio.run(scrape_seek_jobs(title, location))
+        return {"jobs": jobs}
     except Exception as ex:
         return {"error": f"Exception: {str(ex)}"}
-# TODO: remove subprocess + seek_worker.py once stable. Use direct import from app.jobs.seek_scraper
