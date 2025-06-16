@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from .cognito import signup_user, confirm_user, login_user
 
@@ -11,15 +11,15 @@ class AuthSchema(BaseModel):
 @router.post("/signup")
 def signup(data: AuthSchema):
     try:
-        response = signup_user(data.email, data.password)
+        signup_user(data.email, data.password)
         return {"message": "Signup successful, check your email for the confirmation code"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/confirm")
-def confirm(data: AuthSchema, code: str):
+def confirm(data: AuthSchema, code: str = Query(...)):
     try:
-        confirm_user(data.email, data.code)
+        confirm_user(data.email, code)  # ✅ use 'code', not 'data.code'
         return {"message": "User confirmed successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -34,4 +34,3 @@ def login(data: AuthSchema):
         }
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
-
