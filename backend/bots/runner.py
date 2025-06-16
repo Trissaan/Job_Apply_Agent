@@ -1,4 +1,4 @@
-from app.jobs.seek_scraper import scrape_seek_jobs
+from app.jobs.scrapers.seek import scrape_seek_jobs
 from bots.apply_engine import apply_to_job
 from app.resume.gpt_utils import tailor_resume_with_claude, generate_cover_letter
 import os

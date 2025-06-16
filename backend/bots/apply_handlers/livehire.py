@@ -6,7 +6,7 @@ from app.resume.gpt_utils import generate_cover_letter
 from app.resume.export_utils import generate_pdf_from_text
 from bots.utils.job_parser import extract_job_details_ai
 from bots.utils.upload_handler import smart_resume_upload
-from bots.utils.logger import log_application
+from bots.utils.job_logger import log_application
 
 
 

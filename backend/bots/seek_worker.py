@@ -1,4 +1,4 @@
-from seek_scraper import scrape_seek_jobs
+from app.jobs.scrapers.seek import scrape_seek_jobs
 import sys
 import json
 

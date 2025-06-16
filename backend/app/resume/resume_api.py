@@ -1,8 +1,8 @@
 from fastapi import APIRouter, File, UploadFile, Form
 from pydantic import BaseModel
 from app.storage.upload import upload_resume_to_s3
-from app.resume.gpt_utils import generate_cover_letter, tailor_resume_with_claude
-from app.resume.export_utils import save_resume_as_pdf, save_resume_as_text
+from app.resume.logic.gpt_utils import generate_cover_letter, tailor_resume_with_claude
+from app.resume.logic.export_utils import generate_pdf_from_text, save_resume_as_text
 import os
 
 router = APIRouter()
@@ -53,7 +53,7 @@ def generate_tailored_resume_api(data: TailorRequest):
         txt_file = f"{base_name}_resume.txt"
 
         # 2. Save as PDF and TXT
-        pdf_path = save_resume_as_pdf(tailored_text, filename=pdf_file, out_dir=out_dir)
+        pdf_path = generate_pdf_from_text(tailored_text, filename=pdf_file, out_dir=out_dir)
         txt_path = save_resume_as_text(tailored_text, filename=txt_file, out_dir=out_dir)
 
         # 3. Return structured response
