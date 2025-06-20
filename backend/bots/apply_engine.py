@@ -1,10 +1,10 @@
 from playwright.sync_api import sync_playwright
 from urllib.parse import urlparse
-from bots.handlers.workday import apply_workday
-from bots.handlers.greenhouse import apply_greenhouse
-from bots.handlers.lever import apply_lever
-from bots.handlers.livehire import apply_livehire
-from bots.handlers.google_form import apply_google_form
+from bots.apply_handlers.workday import apply_workday
+from bots.apply_handlers.greenhouse import apply_greenhouse
+from bots.apply_handlers.lever import apply_lever
+from bots.apply_handlers.livehire import apply_livehire
+from bots.apply_handlers.google_form import apply_google_form
 from bots.utils.claude_client import get_best_apply_button
 
 

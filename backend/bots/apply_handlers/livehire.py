@@ -2,8 +2,8 @@ import os
 from bots.utils.claude_client import get_best_apply_button
 from bots.utils.form_utils import extract_form_fields, fill_form_by_index
 from bots.utils.claude_field_mapper import get_field_mapping_from_claude
-from app.resume.gpt_utils import generate_cover_letter  
-from app.resume.export_utils import generate_pdf_from_text
+from app.resume.logic.gpt_utils import generate_cover_letter  
+from app.resume.logic.export_utils import generate_pdf_from_text
 from bots.utils.job_parser import extract_job_details_ai
 from bots.utils.upload_handler import smart_resume_upload
 from bots.utils.job_logger import log_application
