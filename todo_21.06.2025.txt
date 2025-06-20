@@ -1,0 +1,31 @@
+Remaining/Next Steps (based on previous chat)
+1. 🧾 Frontend or Dashboard (Streamlit/Next.js?)
+
+	- You were considering a dashboard for tracking/logging jobs.
+
+	- Could use Streamlit for MVP or go full SaaS with Next.js.
+
+2. 🔑 JWT Integration
+
+	- Replace user_id in APIs with Cognito JWT to secure endpoints.
+
+3. 📤 Upload Endpoint Finalization
+
+	- Make /upload-resume accept PDFs, extract and return text.
+
+	- Already has PDF-to-text in extract_text_from_pdf, just needs wiring.
+
+4. 🔁 Continuous Scraping
+
+	- Turn scraping + applying into a background task or daemon that runs every X mins.
+
+	- Consider Celery or a custom scheduler.
+
+5. 📡 Multi-platform Scraping
+
+	- Extend scrapers for other platforms (LinkedIn, Workday, Lever boards, etc.).
+
+6. 🧪 End-to-End Test Endpoint
+
+	- Expose a route like /apply-to-all to trigger the whole flow for a user.
+
