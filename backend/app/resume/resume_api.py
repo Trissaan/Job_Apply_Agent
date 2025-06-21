@@ -1,8 +1,9 @@
-from fastapi import APIRouter, File, UploadFile, Form
+from fastapi import APIRouter, File, UploadFile, Depends
 from pydantic import BaseModel
 from app.storage.upload import upload_resume_to_s3
 from app.resume.logic.gpt_utils import generate_cover_letter, tailor_resume_with_claude
 from app.resume.logic.export_utils import generate_pdf_from_text, save_resume_as_text
+from app.auth.deps import decode_token
 import os
 
 router = APIRouter()
@@ -11,7 +12,7 @@ router = APIRouter()
 @router.post("/upload-resume")
 def upload_resume(
     file: UploadFile = File(...),
-    user_id: str = Form(...)  # TEMP for dev, replace later with JWT
+    user_id: str = Depends(decode_token)
 ):
     try:
         url = upload_resume_to_s3(file.file, file.filename, user_id)
