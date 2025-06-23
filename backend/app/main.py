@@ -13,6 +13,8 @@ from app.user.preferences import router as prefs_router
 from app.jobs.job_scraper_api import router as scraper_router
 from fastapi.openapi.utils import get_openapi
 from fastapi.security import HTTPBearer
+from app.user.job_suggestions_api import router as suggest_router
+
 
 
 app = FastAPI()
@@ -60,3 +62,4 @@ app.include_router(auth_router, prefix="/auth")
 app.include_router(resume_router, prefix="/resume")
 app.include_router(prefs_router, prefix="/user")
 app.include_router(scraper_router, prefix="/jobs")
+app.include_router(suggest_router)
