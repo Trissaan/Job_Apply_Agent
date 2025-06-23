@@ -1,7 +1,7 @@
 import boto3
 from fastapi import Depends, HTTPException, Header
 from jose import jwt, JWTError
-from app.config import COGNITO_CLIENT_ID, AWS_REGION
+from app.config import COGNITO_CLIENT_ID, AWS_REGION,COGNITO_USER_POOL_ID
 import requests
 
 COGNITO_ISSUER = f"https://cognito-idp.{AWS_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}"
