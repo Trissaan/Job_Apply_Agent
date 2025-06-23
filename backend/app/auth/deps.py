@@ -4,7 +4,7 @@ from jose import jwt, JWTError
 from app.config import COGNITO_CLIENT_ID, AWS_REGION
 import requests
 
-COGNITO_ISSUER = f"https://cognito-idp.{AWS_REGION}.amazonaws.com/{COGNITO_CLIENT_ID}"
+COGNITO_ISSUER = f"https://cognito-idp.{AWS_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}"
 
 def get_cognito_public_keys():
     jwks_url = f"{COGNITO_ISSUER}/.well-known/jwks.json"
