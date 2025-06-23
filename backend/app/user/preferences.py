@@ -1,23 +1,34 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from app.db.mongo import users_collection
+from app.auth.deps import decode_token
 
 router = APIRouter()
 
 class Preferences(BaseModel):
-    user_id: str
     job_title: str
-    jd_text: str
+    jd_text: Optional[str] = ""
     location: str
     industry: Optional[str] = None
     experience_level: Optional[str] = None
 
 @router.post("/save-preferences")
-def save_preferences(prefs: Preferences):
+def save_preferences(prefs: Preferences, user_id: str = Depends(decode_token)):
     users_collection.update_one(
-        {"user_id": prefs.user_id},
-        {"$set": prefs.dict()},
+        {"user_id": user_id},
+        {"$set": {**prefs.dict(), "user_id": user_id}},
         upsert=True
     )
     return {"message": "Preferences saved"}
+
+@router.get("/preferences")
+def get_preferences(user_id: str = Depends(decode_token)):
+    prefs = users_collection.find_one({"user_id": user_id}, {"_id": 0})
+    if not prefs:
+        raise HTTPException(status_code=404, detail="Preferences not found")
+    return prefs
+
+def get_user_preferences():
+    # Helper for background scraping — gets all saved user prefs
+    return list(users_collection.find({}, {"_id": 0}))

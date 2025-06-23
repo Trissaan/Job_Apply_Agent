@@ -14,6 +14,8 @@ from app.jobs.job_scraper_api import router as scraper_router
 from fastapi.openapi.utils import get_openapi
 from fastapi.security import HTTPBearer
 from app.user.job_suggestions_api import router as suggest_router
+from app.jobs.auto_apply_scheduler import scheduler  
+
 
 
 
