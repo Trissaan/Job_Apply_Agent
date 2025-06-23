@@ -5,12 +5,51 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.auth.auth_api import router as auth_router
 from app.resume.resume_api import router as resume_router
 from app.user.preferences import router as prefs_router
 from app.jobs.job_scraper_api import router as scraper_router
+from fastapi.openapi.utils import get_openapi
+from fastapi.security import HTTPBearer
+
 
 app = FastAPI()
+
+bearer_scheme = HTTPBearer()
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="AI Job Agent",
+        version="1.0.0",
+        description="Backend for AI Job Agent with JWT Auth",
+        routes=app.routes,
+    )
+    openapi_schema["components"]["securitySchemes"] = {
+        "bearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+        }
+    }
+    for path in openapi_schema["paths"].values():
+        for method in path.values():
+            method["security"] = [{"bearerAuth": []}]
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
