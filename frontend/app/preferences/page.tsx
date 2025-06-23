@@ -60,10 +60,10 @@ export default function PreferencesPage() {
         industry,
         experience_level: experience,
       })
-      setStatus('✅ Preferences saved successfully!')
+      setStatus('Preferences saved successfully!')
     } catch (err) {
       console.error(err)
-      setStatus('❌ Failed to save preferences')
+      setStatus('Failed to save preferences')
     }
   }
 

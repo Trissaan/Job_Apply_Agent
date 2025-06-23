@@ -15,6 +15,8 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.security import HTTPBearer
 from app.user.job_suggestions_api import router as suggest_router
 from app.jobs.auto_apply_scheduler import scheduler  
+from app.jobs.apply_now_api import router as apply_now_router
+
 
 
 
@@ -65,3 +67,4 @@ app.include_router(resume_router, prefix="/resume")
 app.include_router(prefs_router, prefix="/user")
 app.include_router(scraper_router, prefix="/jobs")
 app.include_router(suggest_router)
+app.include_router(apply_now_router)
