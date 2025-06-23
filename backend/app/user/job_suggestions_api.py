@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from bots.utils.claude_client import claude_ask
+from app.utils.claude_client import claude_ask
 
 router = APIRouter()
 
