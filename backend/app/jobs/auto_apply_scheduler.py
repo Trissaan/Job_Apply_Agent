@@ -21,6 +21,10 @@ def auto_apply_job_agent():
         print(f"Found {len(all_users)} users with preferences")
 
         for user in all_users:
+            if not user.get("auto_apply", True):  # Skip if explicitly disabled
+                print(f"[Skip] Auto-apply disabled for user: {user.get('user_id')}")
+                continue
+
             user_id = user.get("user_id")
             job_title = user.get("job_title")
             location = user.get("location")

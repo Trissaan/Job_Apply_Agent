@@ -18,9 +18,6 @@ from app.jobs.auto_apply_scheduler import scheduler
 from app.jobs.apply_now_api import router as apply_now_router
 
 
-
-
-
 app = FastAPI()
 
 bearer_scheme = HTTPBearer()

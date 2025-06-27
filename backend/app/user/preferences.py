@@ -29,6 +29,20 @@ def get_preferences(user_id: str = Depends(decode_token)):
         raise HTTPException(status_code=404, detail="Preferences not found")
     return prefs
 
+@router.post("/user/auto-apply")
+def toggle_auto_apply(
+    enabled: bool = Form(...),
+    user_id: str = Depends(decode_token)
+):
+    try:
+        users_collection.update_one(
+            {"_id": user_id},
+            {"$set": {"auto_apply": enabled}}
+        )
+        return {"success": True, "new_value": enabled}
+    except Exception as e:
+        return {"error": str(e)}
+
 def get_user_preferences():
     # Helper for background scraping — gets all saved user prefs
     return list(users_collection.find({}, {"_id": 0}))

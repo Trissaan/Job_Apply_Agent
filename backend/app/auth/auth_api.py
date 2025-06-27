@@ -19,7 +19,7 @@ def signup(data: AuthSchema):
 @router.post("/confirm")
 def confirm(data: AuthSchema, code: str = Query(...)):
     try:
-        confirm_user(data.email, code)  # ✅ use 'code', not 'data.code'
+        confirm_user(data.email, code) 
         return {"message": "User confirmed successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
