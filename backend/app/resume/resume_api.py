@@ -84,3 +84,4 @@ def generate_tailored_resume_api(data: TailorRequest):
 
     except Exception as e:
         return {"error": str(e)}
+

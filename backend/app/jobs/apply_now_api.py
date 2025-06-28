@@ -5,7 +5,8 @@ from app.jobs.scrapers.seek import scrape_seek_jobs
 from app.resume.logic.gpt_utils import tailor_resume_with_claude, generate_cover_letter
 from app.resume.logic.export_utils import generate_pdf_from_text
 from bots.utils.job_logger import log_application
-from bots.apply_engine import apply_to_job, detect_platform
+from bots.utils.claude_client import extract_tags_from_jd
+from bots.seek_apply import apply_to_seek_job
 import os
 import tempfile
 import traceback
@@ -23,6 +24,8 @@ def apply_now(user_id: str = Depends(decode_token)):
 
         job_title = user.get("job_title")
         location = user.get("location")
+        full_name = user.get("full_name", "Your Name")
+        email = user.get("email", "you@example.com")
 
         if not job_title or not location:
             raise HTTPException(status_code=400, detail="Incomplete preferences")
@@ -35,7 +38,7 @@ def apply_now(user_id: str = Depends(decode_token)):
         with open(resume_txt_path, "r", encoding="utf-8") as f:
             base_resume = f.read()
 
-        # 🔍 Scrape matching jobs
+        # 🔍 Scrape matching jobs from Seek
         jobs = asyncio.run(scrape_seek_jobs(job_title, location))
         if not jobs:
             return {"message": "No jobs found"}
@@ -44,29 +47,40 @@ def apply_now(user_id: str = Depends(decode_token)):
 
         for job in jobs:
             try:
+                print(f"💡 Processing: {job['job_title']}")
                 tailored = tailor_resume_with_claude(base_resume, job["job_description"], job["job_title"])
                 cover_letter = generate_cover_letter(job["job_description"], tailored, job["job_title"])
 
+                # 📝 Save tailored resume as PDF (temp)
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
                     generate_pdf_from_text(tailored, temp_pdf.name)
                     resume_path = temp_pdf.name
 
-                apply_to_job(job["apply_url"], resume_path, user)
+                # 🤖 Apply via Playwright (Seek Easy Apply)
+                asyncio.run(apply_to_seek_job(
+                    job_url=job["apply_url"],
+                    resume_path=resume_path,
+                    name=full_name,
+                    email=email
+                ))
 
+                # 🪵 Log application
+                tags = extract_tags_from_jd(job["job_description"])
                 log_application(
                     job_title=job["job_title"],
                     company=job["company"],
                     job_description=job["job_description"],
                     cover_letter_text=cover_letter,
-                    platform=detect_platform(job["apply_url"]),
+                    platform="seek",
                     job_url=job["apply_url"],
-                    tags=[]
+                    tags=tags
                 )
+
 
                 applied_jobs.append(job["job_title"])
 
             except Exception as job_error:
-                print(f"❌ Failed to apply: {job_error}")
+                print(f"❌ Failed to apply for {job['job_title']}: {job_error}")
                 traceback.print_exc()
 
         return {

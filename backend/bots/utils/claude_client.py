@@ -67,3 +67,26 @@ Elements:
     except Exception as e:
         print(f"❌ Claude failed to pick upload element: {e}")
         return "none"
+
+def extract_tags_from_jd(job_description: str) -> list[str]:
+    prompt = f"""
+You are helping tag job descriptions for a job application bot. From the following job description, extract 3–5 relevant tags that can help classify or filter jobs.
+
+Tags can include:
+- Level (e.g., junior, senior)
+- Location (e.g., remote, hybrid, on-site)
+- Contract type (e.g., contract, full-time)
+- Skills or tools (e.g., python, aws, sql, power bi)
+
+Return the tags in a simple comma-separated list. No explanations.
+
+JOB DESCRIPTION:
+{job_description}
+"""
+
+    try:
+        response = claude_ask(prompt)
+        return [tag.strip().lower() for tag in response.split(",") if tag.strip()]
+    except Exception as e:
+        print("❌ Claude failed to extract tags:", e)
+        return []
