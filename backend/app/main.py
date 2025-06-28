@@ -55,6 +55,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+def start_scheduler():
+    scheduler.start()
+    print("✅ Scheduler started")
+    
 @app.get("/")
 def read_root():
     return {"message": "AI Job Agent Backend is running!"}
