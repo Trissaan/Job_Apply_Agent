@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth.auth_api import router as auth_router
 from app.resume.resume_api import router as resume_router
 from app.user.preferences import router as prefs_router
+from app.user import dashboard_api
 from app.jobs.job_scraper_api import router as scraper_router
 from fastapi.openapi.utils import get_openapi
 from fastapi.security import HTTPBearer
@@ -65,3 +66,4 @@ app.include_router(prefs_router, prefix="/user")
 app.include_router(scraper_router, prefix="/jobs")
 app.include_router(suggest_router)
 app.include_router(apply_now_router)
+app.include_router(dashboard_api.router)
