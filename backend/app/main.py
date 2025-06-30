@@ -1,12 +1,7 @@
 import asyncio
 import sys
-
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.auth.auth_api import router as auth_router
 from app.resume.resume_api import router as resume_router
 from app.user.preferences import router as prefs_router
@@ -18,6 +13,11 @@ from app.user.job_suggestions_api import router as suggest_router
 from app.jobs.auto_apply_scheduler import scheduler  
 from app.jobs.apply_now_api import router as apply_now_router
 from apscheduler.schedulers.background import BackgroundScheduler
+from app.routes import credentials_api
+from app.storage import upload
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 app = FastAPI()
 
@@ -70,6 +70,8 @@ app.include_router(auth_router, prefix="/auth")
 app.include_router(resume_router, prefix="/resume")
 app.include_router(prefs_router, prefix="/user")
 app.include_router(scraper_router, prefix="/jobs")
-app.include_router(suggest_router)
 app.include_router(apply_now_router, prefix = "/api")
+app.include_router(suggest_router)
 app.include_router(dashboard_api.router)
+app.include_router(credentials_api.router)
+app.include_router(upload.router)

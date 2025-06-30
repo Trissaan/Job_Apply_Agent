@@ -1,6 +1,16 @@
 from bots.utils.form_utils import extract_possible_upload_targets
 from bots.utils.claude_client import get_best_resume_upload_target
 import re 
+import boto3
+import os
+
+def upload_resume_to_s3(file_path: str, user_id: str):
+    s3 = boto3.client("s3")
+    bucket_name = os.getenv("S3_BUCKET_NAME")
+    object_name = f"resumes/{user_id}/{os.path.basename(file_path)}"
+
+    s3.upload_file(file_path, bucket_name, object_name)
+    print(f"✅ Uploaded to S3: {object_name}")
 
 def smart_resume_upload(page, resume_path):
     # ✅ Phase 1: Try standard upload

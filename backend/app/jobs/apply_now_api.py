@@ -4,7 +4,7 @@ from app.db.mongo import users_collection
 from app.jobs.scrapers.seek import scrape_seek_jobs
 from app.resume.logic.gpt_utils import tailor_resume_with_claude, generate_cover_letter
 from app.resume.logic.export_utils import generate_pdf_from_text
-from bots.utils.job_logger import log_application
+from bots.utils.job_logger import log_application, has_already_applied
 from bots.utils.claude_client import extract_tags_from_jd
 from bots.seek_apply import apply_to_seek_job
 import os
@@ -47,6 +47,11 @@ def apply_now(user_id: str = Depends(decode_token)):
 
         for job in jobs:
             try:
+                # 🚫 Check for duplicate before applying
+                if has_already_applied(user_id=user_id, job_url=job["apply_url"]):
+                    print(f"[{user_id}] Skipping already-applied job: {job['job_title']} at {job['company']}")
+                    continue
+
                 print(f"💡 Processing: {job['job_title']}")
                 tailored = tailor_resume_with_claude(base_resume, job["job_description"], job["job_title"])
                 cover_letter = generate_cover_letter(job["job_description"], tailored, job["job_title"])
@@ -67,6 +72,7 @@ def apply_now(user_id: str = Depends(decode_token)):
                 # 🪵 Log application
                 tags = extract_tags_from_jd(job["job_description"])
                 log_application(
+                    user_id=user_id,
                     job_title=job["job_title"],
                     company=job["company"],
                     job_description=job["job_description"],
@@ -76,12 +82,12 @@ def apply_now(user_id: str = Depends(decode_token)):
                     tags=tags
                 )
 
-
                 applied_jobs.append(job["job_title"])
 
             except Exception as job_error:
                 print(f"❌ Failed to apply for {job['job_title']}: {job_error}")
                 traceback.print_exc()
+                log_failed_application(user_id=user_id, job=job, error=str(job_error))
 
         return {
             "status": "success",

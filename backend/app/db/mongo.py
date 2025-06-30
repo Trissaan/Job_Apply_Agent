@@ -1,9 +1,14 @@
 from pymongo import MongoClient
 from app.config import MONGO_URI
+from fastapi import Depends
 
 client = MongoClient(MONGO_URI)
 db = client["job_apply_ai"]
 users_collection = db["users"]
+
+
+def get_mongo_db():
+    return db
 
 # --- Create a new user ---
 def create_user(user_id: str, email: str):
@@ -32,3 +37,9 @@ def set_auto_apply(user_id: str, enabled: bool):
 # --- Optional: Get single user by ID ---
 def get_user(user_id: str):
     return users_collection.find_one({"_id": user_id})
+
+def get_user_preferences():
+    return list(users_collection.find({
+        "preferences.job_title": {"$ne": ""},
+        "preferences.location": {"$ne": ""}
+    }, {"_id": 1, "preferences": 1, "auto_apply": 1, "email": 1}))
