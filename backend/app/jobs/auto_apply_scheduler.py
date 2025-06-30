@@ -6,7 +6,7 @@ from app.resume.logic.export_utils import generate_pdf_from_text
 from bots.utils.job_logger import log_application, has_already_applied, log_failed_application
 from bots.utils.upload_handler import upload_resume_to_s3
 from bots.apply_engine import apply_to_job, detect_platform
-from app.jobs.scrapers.seek_scraper import scrape_seek_jobs
+from app.jobs.scrapers.seek import scrape_seek_jobs
 from playwright.async_api import async_playwright
 import os
 import tempfile
