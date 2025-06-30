@@ -17,7 +17,7 @@ from fastapi.security import HTTPBearer
 from app.user.job_suggestions_api import router as suggest_router
 from app.jobs.auto_apply_scheduler import scheduler  
 from app.jobs.apply_now_api import router as apply_now_router
-
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = FastAPI()
 
@@ -54,11 +54,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+scheduler = BackgroundScheduler()
 @app.on_event("startup")
 def start_scheduler():
-    scheduler.start()
-    print("✅ Scheduler started")
+    if not scheduler.running:
+        scheduler.start()
+        print("✅ Scheduler started")
     
 @app.get("/")
 def read_root():
