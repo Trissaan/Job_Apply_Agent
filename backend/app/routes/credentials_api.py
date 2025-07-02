@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.auth.deps import get_current_user_id
+from app.auth.deps import decode_token as get_current_user_id
 from app.db.mongo import get_mongo_db
 from app.utils.crypto import encrypt
 from pydantic import BaseModel

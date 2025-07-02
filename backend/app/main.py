@@ -14,7 +14,7 @@ from app.jobs.auto_apply_scheduler import scheduler
 from app.jobs.apply_now_api import router as apply_now_router
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.routes import credentials_api
-from app.storage import upload
+#from app.storage import upload
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
@@ -74,4 +74,4 @@ app.include_router(apply_now_router, prefix = "/api")
 app.include_router(suggest_router)
 app.include_router(dashboard_api.router)
 app.include_router(credentials_api.router)
-app.include_router(upload.router)
+#app.include_router(upload.router)
