@@ -14,6 +14,17 @@ export default function UploadPage() {
       return
     }
 
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      setMessage('❌ File size exceeds 10MB limit.')
+      return
+    }
+
+    if (file.type !== 'application/pdf') {
+      setMessage('❌ Only PDF files are supported.')
+      return
+    }
+
     const formData = new FormData()
     formData.append('file', file)
 
@@ -35,6 +46,7 @@ export default function UploadPage() {
         <input
           type="file"
           ref={inputRef}
+          accept="application/pdf"
           className="block mb-4"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />

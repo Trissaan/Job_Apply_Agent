@@ -17,7 +17,7 @@ def get_cognito_public_keys():
         raise HTTPException(status_code=500, detail="Failed to fetch JWKs")
 
 def decode_token(authorization: str = Header(..., alias="Authorization")) -> str:
-    """try:
+    try:
         print("🔐 Raw Authorization:", authorization)
 
         # Handle Swagger sending "Bearer Bearer <token>" or just "<token>"
@@ -45,13 +45,8 @@ def decode_token(authorization: str = Header(..., alias="Authorization")) -> str
         )
         print("🎯 Token valid. Payload:", payload)
 
-        return payload["sub"]  # or "username" if that's how you ID users
+        return payload["sub"]
 
     except Exception as e:
         print("❌ Token validation failed:", str(e))
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")"""
-    return {
-        "user_id": "trissaan_demo_001",  
-        "email": "trissaan@gmail.com",      
-        "name": "Trissaan Anandhanayaki Shanmugasundaram"
-    }
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")

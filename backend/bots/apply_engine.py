@@ -54,7 +54,7 @@ def apply_to_job(url: str, resume_path: str, user_info: dict):
                     text = btn.inner_text().strip()
                     if text:
                         button_texts.append(text)
-                except:
+                except Exception:
                     continue
 
             print(" Found buttons:", button_texts)

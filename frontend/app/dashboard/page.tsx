@@ -17,7 +17,8 @@ export default function DashboardPage() {
       return
     }
 
-    fetch('http://localhost:8000/api/user/me', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    fetch(`${apiUrl}/api/user/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -34,7 +35,7 @@ export default function DashboardPage() {
         setError('Unauthorized. Please login again.')
         router.push('/login')
       })
-  }, [])
+  }, [router])
 
   return (
     <div>
