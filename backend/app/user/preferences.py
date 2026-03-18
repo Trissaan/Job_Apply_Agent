@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Form
+from fastapi import APIRouter, Form
 from pydantic import BaseModel
 from typing import Optional
 from app.db.mongo import users_collection
-from app.auth.deps import decode_token
 
 router = APIRouter()
 
@@ -14,7 +13,8 @@ class Preferences(BaseModel):
     experience_level: Optional[str] = None
 
 @router.post("/save-preferences")
-def save_preferences(prefs: Preferences, user_id: str = Depends(decode_token)):
+def save_preferences(prefs: Preferences):
+    user_id = "trissaan_demo_001"  # Hardcoded for local testing
     users_collection.update_one(
         {"user_id": user_id},
         {"$set": {**prefs.dict(), "user_id": user_id}},
@@ -23,20 +23,19 @@ def save_preferences(prefs: Preferences, user_id: str = Depends(decode_token)):
     return {"message": "Preferences saved"}
 
 @router.get("/preferences")
-def get_preferences(user_id: str = Depends(decode_token)):
+def get_preferences():
+    user_id = "trissaan_demo_001"
     prefs = users_collection.find_one({"user_id": user_id}, {"_id": 0})
     if not prefs:
         raise HTTPException(status_code=404, detail="Preferences not found")
     return prefs
 
 @router.post("/user/auto-apply")
-def toggle_auto_apply(
-    enabled: bool = Form(...),
-    user_id: str = Depends(decode_token)
-):
+def toggle_auto_apply(enabled: bool = Form(...)):
+    user_id = "trissaan_demo_001"
     try:
         users_collection.update_one(
-            {"_id": user_id},
+            {"user_id": user_id},
             {"$set": {"auto_apply": enabled}}
         )
         return {"success": True, "new_value": enabled}

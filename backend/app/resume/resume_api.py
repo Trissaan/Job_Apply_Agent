@@ -9,7 +9,34 @@ router = APIRouter()
 
 # --- Upload Base Resume (PDF → Text) ---
 @router.post("/upload-resume")
-def upload_resume(
+def upload_resume(file: UploadFile = File(...)):
+    try:
+        user_id = "trissaan_demo_001"  # hardcoded identity for demo
+
+        os.makedirs("./temp", exist_ok=True)
+
+        # Save uploaded PDF
+        pdf_path = f"./temp/{user_id}_base_resume.pdf"
+        with open(pdf_path, "wb") as f:
+            f.write(file.file.read())
+
+        # Extract text for tailoring
+        resume_text = extract_text_from_pdf(pdf_path)
+
+        # Save text version
+        txt_path = f"./temp/{user_id}_base_resume.txt"
+        with open(txt_path, "w", encoding="utf-8") as f:
+            f.write(resume_text)
+
+        return {
+            "message": "Base resume uploaded successfully.",
+            "resume_text_preview": resume_text[:300] + "..."
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
+
+"""def upload_resume(
     file: UploadFile = File(...),
     user_id: str = Depends(decode_token)
 ):
@@ -36,7 +63,7 @@ def upload_resume(
 
     except Exception as e:
         return {"error": str(e)}
-
+"""
 # --- Request Model for Tailoring ---
 class TailorRequest(BaseModel):
     resume_text: str

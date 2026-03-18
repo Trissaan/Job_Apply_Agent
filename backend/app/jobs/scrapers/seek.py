@@ -1,3 +1,4 @@
+from playwright.async_api import async_playwright
 import re
 import traceback
 
@@ -9,19 +10,27 @@ async def scrape_seek_jobs(page, user_id: str, job_title: str, location: str) ->
         print(f"[{user_id}] Navigating to: {search_url}")
         await page.goto(search_url, timeout=20000, wait_until="domcontentloaded")
 
-        # Dismiss cookie banner if present
+        # Add wait buffer and handle cookie banner
+        await page.wait_for_timeout(3000)  # Wait 3 seconds for page to stabilize
+
         try:
             await page.locator("button:has-text('Accept All')").click(timeout=3000)
         except:
             pass
 
-        await page.wait_for_selector('a[data-automation="jobTitle"]', timeout=20000)
-        job_links = await page.locator('a[data-automation="jobTitle"]').all()
+        try:
+            await page.wait_for_selector('[data-automation*="jobTitle"]', timeout=20000)
+        except Exception as e:
+            print(f"[{user_id}] ❌ Selector not found: {e}")
+            print(await page.content())  # Print full HTML for debug
+            return []
+
+        job_links = await page.locator('[data-automation*="jobTitle"]').all()
         print(f"[{user_id}] Found {len(job_links)} job cards")
 
         job_hrefs = [
             await link.get_attribute("href")
-            for link in job_links[:5]
+            for link in job_links[:5]  # limit to 5 jobs for now
             if await link.get_attribute("href")
         ]
 
@@ -44,7 +53,7 @@ async def scrape_seek_jobs(page, user_id: str, job_title: str, location: str) ->
                     if apply_button and not apply_button.startswith("http"):
                         apply_button = job_url
                 except:
-                    apply_button = job_url  # Fallback
+                    apply_button = job_url
 
                 jobs.append({
                     "job_title": title.strip(),
@@ -54,9 +63,8 @@ async def scrape_seek_jobs(page, user_id: str, job_title: str, location: str) ->
                     "source_url": job_url,
                 })
 
-                # Go back to listing page
                 await page.goto(search_url, timeout=15000)
-                await page.wait_for_selector('a[data-automation="jobTitle"]')
+                await page.wait_for_selector('[data-automation*="jobTitle"]')
 
             except Exception as job_error:
                 print(f"[{user_id}] ❌ Skipped job {idx + 1} due to error:")
