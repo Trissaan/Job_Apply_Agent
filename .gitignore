@@ -81,3 +81,12 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Debug and temporary files
+backend/temp/
+backend/png/
+backend/bots/png/
+job_agent/
+*.png
+*.jpg
+*.jpeg
